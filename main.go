@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"os/exec"
 )
 
 func InitFlags() (dir, name *string, priv, github, readme *bool) {
@@ -17,8 +20,38 @@ func InitFlags() (dir, name *string, priv, github, readme *bool) {
 	return dirPtr, namePtr, privatePtr, createGithubRepoPtr, addReadmePtr
 }
 
+func CheckIfDirectoryAlreadyExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func CreateProjectDirectory(dir, name, path string) error {
+	cmd := exec.Command("mkdir", name)
+	cmd.Dir = dir
+	_, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Project directory has been created at", path)
+	return nil
+}
+
 func main() {
-	dir, name, priv, github, readme := InitFlags() 
+	dir, name, priv, github, readme := InitFlags()
+
+	path := fmt.Sprintf("%s/%s", *dir, *name)
+
+	if CheckIfDirectoryAlreadyExists(path) {
+		log.Printf("There is already directory \"%s\" in %s", *name, *dir)
+		os.Exit(1)
+	}
+
+	err := CreateProjectDirectory(*dir, *name, path)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println("dir: ", *dir)
 	fmt.Println("private: ", *priv)
