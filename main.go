@@ -8,6 +8,12 @@ import (
 	"os/exec"
 )
 
+func CheckErrors (err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func InitFlags() (dir, name *string, priv, github, readme *bool) {
 	dirPtr := flag.String("dir", "/", "Directory in which you want to initialize your git repository")
 	privatePtr := flag.Bool("priv", false, "Do you want this repository to be private?")
@@ -38,6 +44,19 @@ func CreateProjectDirectory(dir, name, path string) error {
 	return nil
 }
 
+func InitGit(path string) error {
+	cmd := exec.Command("git", "init")
+	cmd.Dir = path
+	out, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(out))
+	return nil
+}
+
 func main() {
 	dir, name, priv, github, readme := InitFlags()
 
@@ -49,9 +68,10 @@ func main() {
 	}
 
 	err := CreateProjectDirectory(*dir, *name, path)
-	if err != nil {
-		log.Fatal(err)
-	}
+	CheckErrors(err)
+
+	err = InitGit(path)
+	CheckErrors(err)
 
 	fmt.Println("dir: ", *dir)
 	fmt.Println("private: ", *priv)
