@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/joho/godotenv"
 )
 
 func CheckErrors (err error) {
@@ -24,6 +26,18 @@ func InitFlags() (dir, name *string, priv, github, readme *bool) {
 	flag.Parse()
 
 	return dirPtr, namePtr, privatePtr, createGithubRepoPtr, addReadmePtr
+}
+
+func LoadGithubAccessToken () (string, error) {
+	err := godotenv.Load()
+
+	if err != nil {
+		return "", err
+	}
+
+	at := os.Getenv("GITHUB_ACCESS_TOKEN")
+
+	return at, nil
 }
 
 func CheckIfDirectoryAlreadyExists(path string) bool {
@@ -57,8 +71,13 @@ func InitGit(path string) error {
 	return nil
 }
 
+//https://github.com/google/go-github
+func CreateAndConnectGithub(name, path string, priv bool) error {
+	panic("todo")
+}
+
 func main() {
-	dir, name, priv, github, readme := InitFlags()
+	dir, name, priv, createGithub, readme := InitFlags()
 
 	path := fmt.Sprintf("%s/%s", *dir, *name)
 
@@ -67,15 +86,28 @@ func main() {
 		os.Exit(1)
 	}
 
-	err := CreateProjectDirectory(*dir, *name, path)
+	githubAccessToken, err := LoadGithubAccessToken()
+	CheckErrors(err)
+
+	if *createGithub && githubAccessToken == "" {
+		log.Fatal("Enter your github access token in .env file to create github repository!")
+		os.Exit(1)
+	}
+
+	err = CreateProjectDirectory(*dir, *name, path)
 	CheckErrors(err)
 
 	err = InitGit(path)
 	CheckErrors(err)
 
+	if *createGithub {
+		err = CreateAndConnectGithub(*name, path, *priv)
+		CheckErrors(err)
+	}
+
 	fmt.Println("dir: ", *dir)
 	fmt.Println("private: ", *priv)
 	fmt.Println("name: ", *name)
-	fmt.Println("create github: ", *github)
+	fmt.Println("create github: ", *createGithub)
 	fmt.Println("add readme: ", *readme)
 }

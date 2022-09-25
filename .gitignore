@@ -1,0 +1,4 @@
+# exe file of the project
+*.exe
+# env file
+.env
