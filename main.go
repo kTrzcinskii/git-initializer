@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func CheckErrors (err error) {
@@ -15,7 +16,7 @@ func CheckErrors (err error) {
 func main() {
 	dir, name, priv, createGithub, readme := InitFlags()
 
-	path := fmt.Sprintf("%s/%s", *dir, *name)
+	path := filepath.Join(*dir, *name)
 
 	if CheckIfDirectoryAlreadyExists(path) {
 		log.Printf("There is already directory \"%s\" in %s", *name, *dir)
@@ -35,6 +36,11 @@ func main() {
 
 	err = InitGit(path)
 	CheckErrors(err)
+
+	if *readme {
+		err = AddReadme(path, *name)
+		CheckErrors(err)
+	}
 
 	if *createGithub {
 		err = CreateAndConnectGithub(*name, path, *priv)
