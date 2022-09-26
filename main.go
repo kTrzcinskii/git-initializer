@@ -13,37 +13,37 @@ func CheckErrors (err error) {
 }
 
 func main() {
-	dir, name, priv, createGithub, readme, err := InitFlags()
+	flags, err := InitFlags()
 	CheckErrors(err)
 
-	path := filepath.Join(*dir, *name)
+	path := filepath.Join(flags.dir, flags.name)
 
 	if CheckIfDirectoryAlreadyExists(path) {
-		log.Printf("There is already directory \"%s\" in %s", *name, *dir)
+		log.Printf("There is already directory \"%s\" in %s", flags.name, flags.dir)
 		os.Exit(1)
 	}
 
 	githubAccessToken, err := LoadGithubAccessToken()
 	CheckErrors(err)
 
-	if *createGithub && githubAccessToken == "" {
+	if flags.github && githubAccessToken == "" {
 		log.Fatal("Enter your github access token in .env file to create github repository!")
 		os.Exit(1)
 	}
 
-	err = CreateProjectDirectory(*dir, *name, path)
+	err = CreateProjectDirectory(flags.dir, flags.name, path)
 	CheckErrors(err)
 
 	err = InitGit(path)
 	CheckErrors(err)
 
-	if *readme {
-		err = AddReadme(path, *name)
+	if flags.readme {
+		err = AddReadme(path, flags.name)
 		CheckErrors(err)
 	}
 
-	if *createGithub {
-		err = CreateAndConnectGithub(*name, path, *priv)
+	if flags.github {
+		err = CreateAndConnectGithub(flags.name, path, flags.priv)
 		CheckErrors(err)
 	}
 }
