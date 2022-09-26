@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,7 +13,8 @@ func CheckErrors (err error) {
 }
 
 func main() {
-	dir, name, priv, createGithub, readme := InitFlags()
+	dir, name, priv, createGithub, readme, err := InitFlags()
+	CheckErrors(err)
 
 	path := filepath.Join(*dir, *name)
 
@@ -46,10 +46,4 @@ func main() {
 		err = CreateAndConnectGithub(*name, path, *priv)
 		CheckErrors(err)
 	}
-
-	fmt.Println("dir: ", *dir)
-	fmt.Println("private: ", *priv)
-	fmt.Println("name: ", *name)
-	fmt.Println("create github: ", *createGithub)
-	fmt.Println("add readme: ", *readme)
 }
