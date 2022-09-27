@@ -11,13 +11,13 @@ I created it as a way to learn more about the golang. And this is the reason why
 
 ## How to use it?
 
-1.```git clone https://github.com/kTrzcinskii/git-initializer```
+1. ```git clone https://github.com/kTrzcinskii/git-initializer```
 
-2.```cd git-initializer```
+2. ```cd git-initializer```
 
-3.```go build .```
+3. ```go build .```
 
-4```./git-initializer <flags>```
+4. ```./git-initializer <flags>```
 
 e.g. ```./git-initializer -dir="/c/users/me/projects" -name="important_stuff" -priv=false -readme=true -github=true```
 
