@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -43,7 +44,9 @@ func main() {
 	}
 
 	if flags.github {
-		err = CreateAndConnectGithub(flags.name, path, flags.priv)
+		err = CreateAndConnectGithub(flags.name, path, githubAccessToken, flags.priv)
 		CheckErrors(err)
 	}
+
+	fmt.Println("Everything is ready. Happy coding!")
 }
